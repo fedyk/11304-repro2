@@ -7,7 +7,7 @@ import {
   Vibration,
   Platform,
 } from "react-native";
-import { Notifications } from "expo";
+import * as Notifications from 'expo-notifications'
 import * as Permissions from "expo-permissions";
 import Constants from "expo-constants";
 
@@ -42,8 +42,17 @@ export default class AppContainer extends React.Component {
   };
 
   componentDidMount() {
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: false,
+        shouldSetBadge: true,
+      }),
+      handleError: (err) => alert("handle notifications error" + err.message)
+    });
+
     this.registerForPushNotificationsAsync();
-    this._notificationSubscription = Notifications.addListener(
+    this._notificationSubscription = Notifications.addNotificationReceivedListener(
       this._handleNotification
     );
   }
@@ -56,7 +65,7 @@ export default class AppContainer extends React.Component {
 
   sendNotification = async () => {
     const message = {
-      to: this.state.expoPushToken,
+      to: this.state.expoPushToken.data,
       sound: "default",
       title: "Original Title",
       body: "And here is the body!",
@@ -72,7 +81,7 @@ export default class AppContainer extends React.Component {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(message),
-    });
+    }).catch(err => alert(err.message))
   };
 
   render() {
@@ -80,7 +89,7 @@ export default class AppContainer extends React.Component {
       <View style={styles.container}>
         <View style={styles.message}>
           <Text>Origin: {this.state.notification.origin}</Text>
-          <Text>Data: {JSON.stringify(this.state.notification.data)}</Text>
+          <Text>Data: {JSON.stringify(this.state.notification)}</Text>
         </View>
         <Button
           title={"Press to Send Notification"}
