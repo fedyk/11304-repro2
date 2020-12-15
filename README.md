@@ -1,15 +1,19 @@
 # How to reproduce?
 
-Open app in the order of updates and test Push Notifications each time.
+1. Install app with Expo38
+2. Update to app with Expo39
+3. Update to app with Expo40
+4. Remove app with Expo40 on device and install it again from TestFlight.
+5. Click "Press to Send Notification" and observe the missed notifications.
 
-## Expo 38
+## App with Expo 38
 
 https://testflight.apple.com/join/TkdAuNBU
 
-## Expo 39
+## App with Expo 39
 
 https://testflight.apple.com/join/Y7Vp1hjh
 
-## Expo 40
+## App with Expo 40
 
 https://testflight.apple.com/join/DhzTSxuP
