@@ -5,7 +5,7 @@ import {
   View,
   Button,
   Vibration,
-  Platform,
+  ScrollView,
 } from "react-native";
 import * as Notifications from 'expo-notifications'
 import * as Permissions from "expo-permissions";
@@ -13,6 +13,7 @@ import Constants from "expo-constants";
 
 export default class AppContainer extends React.Component {
   state = {
+    devicePushToken: "",
     expoPushToken: "",
     notification: {},
   };
@@ -52,6 +53,11 @@ export default class AppContainer extends React.Component {
     });
 
     this.registerForPushNotificationsAsync();
+
+    Notifications.getDevicePushTokenAsync()
+      .then(devicePushToken => this.setState({ devicePushToken }))
+      .catch(err => alert(`fail to get device token: ${err.message}`))
+
     this._notificationSubscription = Notifications.addNotificationReceivedListener(
       this._handleNotification
     );
@@ -86,7 +92,11 @@ export default class AppContainer extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.tokens}>
+          <Text selectable>Device Token: {JSON.stringify(this.state.devicePushToken)}</Text>
+          <Text selectable>Expo Token: {JSON.stringify(this.state.expoPushToken)}</Text>
+        </View>
         <View style={styles.message}>
           <Text>Origin: {this.state.notification.origin}</Text>
           <Text>Data: {JSON.stringify(this.state.notification)}</Text>
@@ -95,7 +105,7 @@ export default class AppContainer extends React.Component {
           title={"Press to Send Notification"}
           onPress={this.sendNotification}
         />
-      </View>
+      </ScrollView>
     );
   }
 }
@@ -105,6 +115,9 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "space-around",
+  },
+  tokens: {
+    alignItems: "center"
   },
   message: {
     alignItems: "center",
